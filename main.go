@@ -5,12 +5,16 @@ import (
     "fmt"
     // "net/http"
     "os"
+	"log"
+	// "reflect"
 	// "strings"
     // "reflect"
     // "encoding/json"	
     openai "github.com/sashabaranov/go-openai"
 	// "time"
 	twitterscraper "github.com/n0madic/twitter-scraper"
+
+	"github.com/groovili/gogtrends"
 )
 
 func getTweets() {
@@ -36,11 +40,9 @@ func callGPT() {
     fmt.Println("calling Chat GPT")
     fmt.Println()
 	
-	vaar strArr[10]strings
+	// strings[0] = "Billionaire Paul Tudor Jones:
 
-	strings[0] = "Billionaire Paul Tudor Jones:
-
-	“[Bitcoin]’s the only thing that humans can’t adjust the supply in…I’m going to always stick with it.”"
+	// “[Bitcoin]’s the only thing that humans can’t adjust the supply in…I’m going to always stick with it.”"
     
 	client := openai.NewClient(os.Getenv("OPEN_API_KEY"))
 	resp, err := client.CreateCompletion(
@@ -63,7 +65,7 @@ func callGPT() {
 		return
 	}
 	
-	responseText = resp.Choices[0].Text
+	responseText := resp.Choices[0].Text
 
 	if (responseText == "positive") {
 
@@ -74,7 +76,45 @@ func callGPT() {
 	}
 }
 
+func getGoogleTrendData() {
+	// Daily trends
+	ctx := context.Background()
+	// dailySearches, err := gogtrends.Daily(ctx, "EN", "US")
+	langEn := "EN"
+
+	log.Println("Explore Search:")
+	keyword := "Bitcoin"
+	i := 0
+
+	for i < 1 {
+		keywords, err := gogtrends.Search(ctx, keyword, langEn)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		
+		j := 0
+
+		for _, v := range keywords {
+			// log.Println(v)
+			
+			fmt.Println(keywords[j].Title + " "  + keywords[j].Type)
+
+			if v.Type == "Language" {
+				keyword = v.Mid
+				break
+			}
+
+			j = j + 1
+		}
+
+		i = i + 1
+	}
+}
+
 func main() {
-    callGPT()
+    // callGPT()
 	// getTweets()
+	getGoogleTrendData()
 }
